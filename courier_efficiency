@@ -1,0 +1,21 @@
+WITH courier_stats as (
+	SELECT
+		delivery_partner_experience_years as опыт_работы,
+		COUNT(*) AS доставки,
+		AVG(delivery_time_minutes) AS среднее_время_доставки,
+		AVG(delivery_partner_rating) AS средний_рейтинг,
+		AVG(delivery_efficiency_score) AS оценка_эффективности_доставки,
+		ROUND(100.0 * SUM(CASE WHEN delayed_delivery_flag THEN 1 ELSE 0 END) / COUNT(*),2) AS процент_задержек
+	FROM food_delivery_analytics_cleaned
+	WHERE delivery_partner_experience_years IS NOT NULL
+	GROUP BY delivery_partner_experience_years
+)
+SELECT опыт_работы, доставки, среднее_время_доставки, средний_рейтинг, оценка_эффективности_доставки, процент_задержек,
+	CASE
+		WHEN оценка_эффективности_доставки > 80 AND процент_задержек < 10 THEN 'Отличный курьер'
+		WHEN оценка_эффективности_доставки > 60 THEN 'Хороший'
+		WHEN процент_задержек > 30 THEN 'Требует обучения'
+		ELSE 'Средний'
+	END AS performance_tier
+FROM courier_stats
+ORDER BY оценка_эффективности_доставки DESC;
