@@ -3,13 +3,14 @@ SELECT
 		WHEN delayed_delivery_flag = false AND cancellation_flag = false THEN 'Успешная доставка'
 		WHEN cancellation_flag = true THEN 'Отменён заказ'
 		WHEN delayed_delivery_flag = true THEN 'Задержанная доставка'
-	END as delivery_status,
+	END as Статус_доставки,
 
-	COUNT(*) as orders_count,
-	ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER(), 2) as percentage,
-	AVG(order_value) as avg_order_value,
-	AVG(tip_amount) as avg_tip
+	COUNT(*) as Количество_заказов,
+	ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER(), 2) as Процент_от_общего_числа,
+	AVG(order_value) as Средняя_стоимость_заказа,
+	AVG(tip_amount) as Средняя_сумма_чаевых
 	
 FROM food_delivery_analytics_cleaned
-GROUP BY delivery_status
-ORDER BY orders_count DESC;
+GROUP BY Статус_доставки
+ORDER BY Количество_заказов DESC;
+
