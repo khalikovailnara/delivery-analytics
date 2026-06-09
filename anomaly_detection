@@ -1,0 +1,36 @@
+WITH  Статистика AS (
+    SELECT 
+        AVG(order_value) AS Средний_чек,
+        STDDEV(order_value) AS Отклонение_чека,
+        AVG(delivery_time_minutes) AS Среднее_время,
+        STDDEV(delivery_time_minutes) AS Отклонение_времени
+    FROM food_delivery_analytics_cleaned
+)
+SELECT 
+    'Аномально дорогой заказ' AS Тип_аномалии,
+    order_id AS Номер_заказа,
+    order_value AS Сумма_заказа,
+    delivery_time_minutes AS Время_доставки,
+    customer_rating AS Рейтинг_клиента
+FROM food_delivery_analytics_cleaned, Статистика
+WHERE order_value > Средний_чек + 3 * Отклонение_чека
+
+UNION ALL
+
+SELECT 'Очень долгая доставка', order_id, order_value, delivery_time_minutes, customer_rating
+FROM food_delivery_analytics_cleaned, Статистика
+WHERE delivery_time_minutes > Среднее_время + 3 * Отклонение_времени
+
+UNION ALL
+
+SELECT 'Нулевой рейтинг при доставке', order_id, order_value, delivery_time_minutes, customer_rating
+FROM food_delivery_analytics_cleaned
+WHERE customer_rating = 0 AND cancellation_flag = false
+
+UNION ALL
+
+SELECT 'Заказ без стоимости', order_id, order_value, delivery_time_minutes, customer_rating
+FROM food_delivery_analytics_cleaned
+WHERE order_value <= 0
+
+LIMIT 20;
