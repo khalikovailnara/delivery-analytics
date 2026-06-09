@@ -5,15 +5,15 @@ WITH Клиентские_метрики AS (
 			WHEN customer_loyalty_score >= 7 THEN 'VIP'
 			WHEN customer_loyalty_score >=4 THEN 'Серебро'
 			ELSE 'Бронза'
-		END as Сегмент_клиента
+		END AS Сегмент_клиента
 	FROM food_delivery_analytics_cleaned	
 )
 SELECT 
 	Сегмент_клиента,
-	COUNT(*) as Количество_заказов,
-	AVG(order_value) as Средняя_стоимость_заказа,
-	AVG(tip_amount) as Средняя_сумма_чаевых,
-	ROUND(100.0 * SUM(CASE WHEN tip_amount > 0 THEN 1 ELSE 0 END) / COUNT(*),2) as Процент_заказов_с_чаевыми
+	COUNT(*) AS Количество_заказов,
+	AVG(order_value) AS Средняя_стоимость_заказа,
+	AVG(tip_amount) AS Средняя_сумма_чаевых,
+	ROUND(100.0 * SUM(CASE WHEN tip_amount > 0 THEN 1 ELSE 0 END) / COUNT(*),2) AS Процент_заказов_с_чаевыми
 FROM Клиентские_метрики
 GROUP BY Сегмент_клиента
 ORDER BY Средняя_стоимость_заказа DESC;
